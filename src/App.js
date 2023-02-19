@@ -259,7 +259,13 @@ const imagesList = [
 // Replace your code here
 
 class App extends Component {
-  state = {activeTabId: tabsList[0].tabId}
+  state = {
+    activeTabId: tabsList[0].tabId,
+    imageUrl: imagesList[0].imageUrl,
+    timer: 60,
+    score: 0,
+    gameIsActive: true,
+  }
 
   getFilteredImages = () => {
     const {activeTabId} = this.state
@@ -274,34 +280,113 @@ class App extends Component {
     this.setState({activeTabId: tabId})
   }
 
+  componentWillUnmount = () => {
+    console.log('component will unmount method is called')
+    clearInterval(this.timerID)
+  }
+
+  componentDidMount = () => {
+    console.log('component did mount method called')
+    this.timerId = setInterval(this.changeTimerStatus, 1000)
+  }
+
+  onUpdateNewThumbnail = thumbnailUrl => {
+    const {imageUrl} = this.state
+    const filterImagesList = imagesList.filter(
+      eachImage => eachImage.thumbnailUrl === thumbnailUrl,
+    )
+    const isMatch = filterImagesList[0].imageUrl === imageUrl
+
+    if (isMatch) {
+      const newImageUrl =
+        imagesList[Math.floor(Math.random() * imagesList.length)].imageUrl
+      this.setState(prevState => ({
+        imageUrl: newImageUrl,
+        score: prevState.score + 1,
+      }))
+    } else {
+      this.setState(prevState => ({gameIsActive: !prevState.gameIsActive}))
+      clearInterval(this.timerID)
+    }
+  }
+
+  changeTimerStatus = () => {
+    const {timer} = this.state
+
+    if (timer !== 0) {
+      this.setState(prevState => ({timer: prevState.timer - 1}))
+    } else {
+      clearInterval(this.timerID)
+      this.setState({gameIsActive: false})
+    }
+  }
+
+  onClickPlayAgain = () => {
+    this.setState({
+      activeTabId: tabsList[0].tabId,
+      imageUrl: imagesList[0].imageUrl,
+      timer: 60,
+      score: 0,
+      gameIsActive: true,
+    })
+
+    this.timerID = setInterval(this.changeTimerStatus, 1000)
+  }
+
   render() {
-    const {activeTabId} = this.state
+    const {activeTabId, imageUrl, timer, score, gameIsActive} = this.state
     const filteredThumbnailImagesList = this.getFilteredImages()
     return (
       <div className="bg-container">
-        <Header />
-        <div className="game-container">
-          <img
-            src={imagesList[0].imageUrl}
-            alt={imagesList[0].category}
-            className="game-image"
-          />
-          <ul className="tabs-container">
-            {tabsList.map(eachTab => (
-              <TabItem
-                key={eachTab.tabId}
-                tabDetails={eachTab}
-                updatedActiveTabId={this.getUpdatedActiveTabId}
-                isActive={activeTabId === eachTab.tabId}
+        <Header timer={timer} score={score} />
+
+        {gameIsActive && (
+          <div className="game-container">
+            <img src={imageUrl} alt="website logo" className="game-image" />
+            <ul className="tabs-container">
+              {tabsList.map(eachTab => (
+                <TabItem
+                  key={eachTab.tabId}
+                  tabDetails={eachTab}
+                  updatedActiveTabId={this.getUpdatedActiveTabId}
+                  isActive={activeTabId === eachTab.tabId}
+                />
+              ))}
+            </ul>
+            <ul className="thumbnails-container">
+              {filteredThumbnailImagesList.map(eachDetails => (
+                <MatchGame
+                  key={eachDetails.id}
+                  imageDetails={eachDetails}
+                  updateNewThumbnail={this.onUpdateNewThumbnail}
+                />
+              ))}
+            </ul>
+          </div>
+        )}
+        {!gameIsActive && (
+          <div className="game-card-container">
+            <img
+              src="https://assets.ccbp.in/frontend/react-js/match-game-trophy.png"
+              className="trophy-image"
+              alt="trophy"
+            />
+            <p className="main-heading">YOUR SCORE</p>
+            <p className="your-score">{score}</p>
+            <button
+              type="button"
+              className="play-button"
+              onClick={this.onClickPlayAgain}
+            >
+              <img
+                src="https://assets.ccbp.in/frontend/react-js/match-game-play-again-img.png"
+                className="restart"
+                alt="reset"
               />
-            ))}
-          </ul>
-          <ul className="thumbnails-container">
-            {filteredThumbnailImagesList.map(eachDetails => (
-              <MatchGame key={eachDetails.id} imageDetails={eachDetails} />
-            ))}
-          </ul>
-        </div>
+              PLAY AGAIN
+            </button>
+          </div>
+        )}
       </div>
     )
   }

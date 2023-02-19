@@ -4,13 +4,13 @@
 }
 
 .thumbnail-img {
-  border-radius: 7px;
-  width: 100px;
-  padding: 5px;
+  border-radius: 4px;
+  width: 75px;
+  padding: 2px;
 }
 @media screen and (min-width: 768px) {
   .thumbnail-img {
-    width: 140px;
+    width: 150px;
   }
 }
 .thumbnail-btn {

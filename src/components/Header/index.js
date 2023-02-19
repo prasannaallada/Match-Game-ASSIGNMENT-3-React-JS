@@ -1,8 +1,7 @@
 import './index.css'
 
 const Header = props => {
-  const {a} = props
-  console.log(a)
+  const {timer, score} = props
   return (
     <nav className="nav-container">
       <img
@@ -12,7 +11,7 @@ const Header = props => {
       />
       <div className="score-timer-container">
         <p className="score-text">
-          Score: <span className="span">0</span>
+          Score: <span className="span">{score}</span>
         </p>
         <div className="timer-container">
           <img
@@ -20,7 +19,7 @@ const Header = props => {
             src="https://assets.ccbp.in/frontend/react-js/match-game-timer-img.png"
             alt="timer"
           />
-          <span className="span">60 sec</span>
+          <span className="span">{timer} sec</span>
         </div>
       </div>
     </nav>
