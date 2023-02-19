@@ -6,7 +6,7 @@ const TabItem = props => {
 
   return (
     <li className="tab-list-item">
-      <button type="button" className="tab-btn active-tab-btn">
+      <button type="button" className="tab-btn">
         {displayText}
       </button>
     </li>

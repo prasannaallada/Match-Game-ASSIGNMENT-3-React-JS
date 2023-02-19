@@ -1,4 +1,10 @@
+import {Component} from 'react'
+
 import MatchGame from './components/MatchGame'
+
+import Header from './components/Header'
+
+import TabItem from './components/TabItem'
 
 import './App.css'
 
@@ -252,6 +258,43 @@ const imagesList = [
 
 // Replace your code here
 
-const App = () => <MatchGame tabsList={tabsList} imagesList={imagesList} />
+class App extends Component {
+  state = {activeTabId: tabsList[0].tabId}
+
+  getFilteredImages = () => {
+    const {activeTabId} = this.state
+    const filteredImagesList = imagesList.filter(
+      eachImage => eachImage.category === activeTabId,
+    )
+
+    return filteredImagesList
+  }
+
+  render() {
+    const filteredThumbnailImagesList = this.getFilteredImages()
+    return (
+      <div className="bg-container">
+        <Header />
+        <div className="game-container">
+          <img
+            src={imagesList[0].imageUrl}
+            alt={imagesList[0].category}
+            className="game-image"
+          />
+          <ul className="tabs-container">
+            {tabsList.map(eachTab => (
+              <TabItem key={eachTab.tabId} tabDetails={eachTab} />
+            ))}
+          </ul>
+          <ul className="thumbnails-container">
+            {filteredThumbnailImagesList.map(eachDetails => (
+              <MatchGame key={eachDetails.id} imageDetails={eachDetails} />
+            ))}
+          </ul>
+        </div>
+      </div>
+    )
+  }
+}
 
 export default App
