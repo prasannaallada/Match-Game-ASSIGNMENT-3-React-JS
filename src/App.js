@@ -270,7 +270,12 @@ class App extends Component {
     return filteredImagesList
   }
 
+  getUpdatedActiveTabId = tabId => {
+    this.setState({activeTabId: tabId})
+  }
+
   render() {
+    const {activeTabId} = this.state
     const filteredThumbnailImagesList = this.getFilteredImages()
     return (
       <div className="bg-container">
@@ -283,7 +288,12 @@ class App extends Component {
           />
           <ul className="tabs-container">
             {tabsList.map(eachTab => (
-              <TabItem key={eachTab.tabId} tabDetails={eachTab} />
+              <TabItem
+                key={eachTab.tabId}
+                tabDetails={eachTab}
+                updatedActiveTabId={this.getUpdatedActiveTabId}
+                isActive={activeTabId === eachTab.tabId}
+              />
             ))}
           </ul>
           <ul className="thumbnails-container">
